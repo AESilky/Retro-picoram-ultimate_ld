@@ -38,6 +38,42 @@ currently suported machines (with the exception of the MPF-1P):
 
 ![YouTube Video](pics/youtube.jpg)
 
+## Latest News
+
+### October 2025
+
+During my [RetroChallenge 2025/10
+contribution](https://hackaday.io/project/204153-3d-graphics-on-the-microprofessor-mpf-1b),
+I encountered a pretty nasty issue which took me quite a while to
+debug and resolve. Mostly chasing red herrings. 
+
+My [rotating 3D Cube](https://youtu.be/pLtGfMtQikc) was glitching, and
+it took me a long time to realize that this was caused by noisy ADC
+button decoding and inapropriate ADC level thresholds. The problem was
+that this happened without visual feedback in the UI, so I was unware
+of it. Now, for each detected button press, the SRAM emulation is
+halted; and also for spurious button presses that don't cause an UI
+action (the `CANCEL2` button was responsible). Now, halting the SRAM
+emulation can only work properly if the Z80 WAIT signal is connected
+to PicoRAM, which I had not in this case. Sometimes, I simply hold the
+RESET button manually on the Microprofessor instead whilst operating
+PicoRAM. Obviously, you can't just halt SRAM emulation and not halt
+the CPU and expect it to run properly.
+
+So, this problem was fixed by adjusting the ADC threshold levels in
+the `ULTIMATE.INI` file. However, I didn't like that the spurious button
+presses weren't reported and happened "silently", leaving me unaware
+of what was happening. In the UI loop code, there was no `switch case`
+that caught this case, and a `default` clause was missing as well. I
+have now added such a `default` clause. It will show an error message
+on the display informing the user about inadequate ADC button
+threshold levels in the init file that may cause SRAM emulation
+glitches.
+
+**Please install the [new firmware (Version
+1.2).](firmware/picoram_ultimate_v1.5.uf2)**
+
+
 ## Overview 
 
 PicoRAM Ultimate is powered directly from the host machine; i.e., via
