@@ -71,8 +71,7 @@ threshold levels in the init file that may cause SRAM emulation
 glitches.
 
 **Please install the [new firmware (Version
-1.2).](firmware/picoram_ultimate_v1.5.uf2)**
-
+1.5).](firmware/picoram_ultimate_v1.5.uf2)**
 
 ## Overview 
 
