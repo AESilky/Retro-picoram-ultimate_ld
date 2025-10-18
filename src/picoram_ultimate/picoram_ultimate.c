@@ -654,13 +654,13 @@ void display_loop_et3400() {
 	break;
 
       default :
-
+	
 	clear_screen();
 	sprintf(text_buffer, "ADC #%1x KEY #%1x", adc, buttons); 
+	WriteString(buf, 0, 0, text_buffer);
 	print_string(0,1,"*  ADC GLITCH  *"); 
 	print_string(0,2,"* BUTTON PRESS *"); 
 	print_string(0,3,"* CONFIG ERROR *");
-	WriteString(buf, 0, 3, text_buffer);
 	render(buf, &frame_area);
 
 	sleep_ms(DISPLAY_DELAY);
