@@ -21,7 +21,7 @@
 //
 //
 
-#define VERSION "v1.4 07-21-2025"
+#define VERSION "v1.5 10-17-2025"
 
 //
 // Supported Machines
@@ -556,19 +556,6 @@ void display_loop_et3400() {
     //
     //
 
-    
-    // sprintf(text_buffer, "%1x:%04x:%02x:%02x", cur_bank, m_adr, w_op, r_op); 
-    // WriteString(buf, 0, 0, text_buffer);
-	            
-    //render(buf, &frame_area);
-    // }
-
-    //
-    //
-    //
-
-    // while (true) {
-
     buttons = read_button_state(); 
 
     if (buttons != NONE ) {
@@ -665,19 +652,33 @@ void display_loop_et3400() {
 	  clear_screen(); 	  
 
 	break;
+
+      default :
+
+	clear_screen();
+	sprintf(text_buffer, "ADC #%1x KEY #%1x", adc, buttons); 
+	print_string(0,1,"*  ADC GLITCH  *"); 
+	print_string(0,2,"* BUTTON PRESS *"); 
+	print_string(0,3,"* CONFIG ERROR *");
+	WriteString(buf, 0, 3, text_buffer);
+	render(buf, &frame_area);
+
+	sleep_ms(DISPLAY_DELAY);
+	sleep_ms(DISPLAY_DELAY);
+	sleep_ms(DISPLAY_DELAY);
+	sleep_ms(DISPLAY_DELAY);
 	
       } 
 
       gpio_put(LED_PIN, 0);
       disabled = false;
       reset_release(); 
-
       
     } 
-
-  } 
-
+  }
+  
 }
+
 
 void display_loop() {    
 
@@ -901,6 +902,21 @@ void display_loop() {
           clear_screen();         
 
         break;
+	
+      default :
+
+	clear_screen();
+	sprintf(text_buffer, "ADC #%1x KEY #%1x", adc, buttons); 
+	print_string(0,1,"*  ADC GLITCH  *"); 
+	print_string(0,2,"* BUTTON PRESS *"); 
+	print_string(0,3,"* CONFIG ERROR *");
+	WriteString(buf, 0, 3, text_buffer);
+	render(buf, &frame_area);
+
+	sleep_ms(DISPLAY_DELAY);
+	sleep_ms(DISPLAY_DELAY);
+	sleep_ms(DISPLAY_DELAY);
+	sleep_ms(DISPLAY_DELAY);
         
       } 
 
@@ -2287,7 +2303,6 @@ void main_labvolt(void) {
 }
 
 
-
 void main_mpf(void) {
 
   read = false; 
@@ -2554,11 +2569,14 @@ int main() {
   //
   //
   switch (MACHINE_T) {
+    
   case ET3400 : 
-  case ET3400_EXP : 
+  case ET3400_EXP : multicore_launch_core1(display_loop_et3400); break;
+    
   case MPF : multicore_launch_core1(display_loop_et3400); break;
 
-  default : multicore_launch_core1(display_loop); 
+  default : multicore_launch_core1(display_loop);
+    
   }
 
   //
