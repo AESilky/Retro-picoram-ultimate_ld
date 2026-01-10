@@ -48,8 +48,6 @@ has been uploaded.
 
 ![ET-3400A a)](pics/ultimate-heathkit-a-1.JPG)
 
-![ET-3400A b)](pics/ultimate-heathkit-a-2.JPG)
-
 Here is [a YT video.](https://youtu.be/EdnRqnlCDcE)
 
 ### October 2025
