@@ -614,8 +614,8 @@ See [here.](gerbers/gerbers.zip)
 
 ## Firmware Image
 
-The current version is 1.5, October 2025. The `.uf2` image can be
-found [here.](firmware/picoram_ultimate_v1.5.uf2)
+The current version is 1.6, January 2026. The `.uf2` image can be
+found [here.](firmware/picoram_ultimate_v1.6.uf2)
 
 ## Firmware Sources
 
