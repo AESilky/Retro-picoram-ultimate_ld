@@ -17,7 +17,7 @@ FAT file system facilitates data / file exchange with the PC or Mac.
 
 Currently supported SBCs / host machines are:
 - Stock Heathkit ET-3400: MC6800 CPU, either 2x 2112 (512 Bytes) or 4x 2112 (1 KB)
-- Stock Heathkit ET-3400A: MC6808 CPU, 2x 2114 (1 KB)
+- Stock Heathkit ET-3400A: MC6808 CPU, 2x 2114 (512 Bytes only!)
 - Heathkit ET-3400 memory expansion mode: MC6800 CPU, 2 KBs via expansion header and additional GAL16V8 address decoder 
 - Multitech Microprofessor MPF-1, MPF-1B and MPF-1P: Z80 CPU, 1x 6116, 2 KBs  
 - Lab-Volt 6502: 6502 CPU, 2x 2114, 1 KB
@@ -276,7 +276,7 @@ The following types are supported; each host system is described in
 more detail below.
 
 - `HEATHKIT`: stock Heathkit ET-3400. PicoRAM plugs into the `IC14` and `IC17` 2112 SRAM sockets and provides 512 bytes or 1 KB of SRAM (configurable).
-- `ET-3400A`: stock Heathkit ET-3400A. PicoRAM plugs into the `U14` and `U15` 2111 SRAM sockets and provides 1 KB of SRAM. 
+- `ET-3400A`: stock Heathkit ET-3400A. PicoRAM plugs into the `U14` and `U15` 2111 SRAM sockets and provides 512 Bytes of SRAM (*not* 1 KB, see below for an explanation).
 - `HEATHKIT+`: Heathkit ET-3400 with extension header. PicoRAM plugs onto the extension header and provides 2 KBs of SRAM. This required an additional address decoder (a GAL16V8). See below for details. 
 - `LABVOLT`: Lab-Volt 6502 trainer. PicoRAM plugs into the `RAM (D0-D3)` and `RAM (D4-D7)` 2114 sockets and provides 1 KB of SRAM. 
 - `MASTERLAB`: Philips MC6400 MasterLab. PicoRAM plugs into the 2 2114 SRAM sockets and provides 1 KB of SRAM. 
@@ -325,9 +325,10 @@ uses a 6808 instead of of the 6800, and 2 2114 SRAM chips instead of the
 2 (or 4) 2112 SRAM chips in the ET-3400. 
 
 The stock system comes with 2 2114 SRAM chips (`U14` and `U15`),
-amounting to 1 KB.  In this configuration, PicoRAM connects to `U14`
-and `U15` via a ribbon cable connector and can emulate 1 KB of memory
-in the address range `0x0000 - 0x01ff`.
+providing 512 Bytes from `0x0000 - 0x01ff`. Interestingly, only 512
+Bytes are utilized by the ET-3400A instead of the full 1 KB provided
+by the 2 2114, as the Heathkit designers did not connect the 10th
+address bit (A9) to `U14`, `U15`. 
 
 ![ET-3400a Stock Config](pics/ultimate-heathkit-a-1.JPG)
 
@@ -344,7 +345,7 @@ The jumper configuration for this mode is:
 
 | JP1 | JP2 | JP3 | JP4 | JP5 | JP6 | JP7 | JP8 | JP9 | A9 | A10 | 
 |-----|-----|-----|-----|-----|-----|-----|-----|-----|----|-----|
-| *   | R   | *   | R   | R   | *   | R   | R   | R   | D  | D   | 
+| *   | R   | *   | R   | *   | *   | R   | R   | R   | D  | D   | 
 
 Where `*` = don't care.
 

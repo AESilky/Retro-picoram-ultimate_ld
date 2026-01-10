@@ -21,7 +21,7 @@
 //
 //
 
-#define VERSION "v1.6 01-09-2026"
+#define VERSION "v1.6 01-10-2026"
 
 //
 // Supported Machines
@@ -171,6 +171,10 @@ unsigned char decode_hex(char c) {
 unsigned char reverse_bits(unsigned char b) {
   return (b & 0b00000001) << 3 |  (b & 0b00000010) << 1 | (b & 0b00000100) >> 1 |  (b & 0b00001000) >> 3 | 
     (b & 0b00010000) << 3 |  (b & 0b00100000) << 1 | (b & 0b01000000) >> 1 |  (b & 0b10000000) >> 3 ; 
+}
+
+unsigned char flip_bytes(unsigned char b) {
+  return (b & 0b00001111) << 4 |  (b & 0b11110000) >> 4; 
 }
 
 void clear_bank(uint8_t bank) {
@@ -1913,6 +1917,18 @@ void load_file(bool quiet) {
 
     break; 
     
+  case ET3400A : // note - the stock et3400a has A9 unconnected! hence, only 512 Bytes... reads as high... 
+
+    for (uint32_t b = 0; b < 256; b++) {	
+      ram[cur_bank][b+256] = flip_bytes(sdram[b]); 
+    }
+
+    for (uint32_t b = 256; b < 512; b++) {	
+      ram[cur_bank][b-256] = flip_bytes(sdram[b]); 
+    }
+
+    break;
+
   case LABVOLT :
   default: 
 
@@ -2018,6 +2034,18 @@ void pgm2() {
 
     for (uint32_t b = 0; b < 2048; b++) {	
       sdram[b] = reverse_bits(ram[cur_bank][b]);
+    }
+
+    break;
+
+  case ET3400A : // note - the stock et3400a has A9 unconnected! hence, only 512 Bytes... reads as high... 
+
+    for (uint32_t b = 0; b < 256; b++) {	
+      sdram[b] = flip_bytes(ram[cur_bank][b+256]);
+    }
+
+    for (uint32_t b = 256; b < 512; b++) {	
+      sdram[b] = flip_bytes(ram[cur_bank][b-256]);
     }
 
     break;
