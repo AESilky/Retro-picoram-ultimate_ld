@@ -48,7 +48,7 @@ has been uploaded.
 
 ![ET-3400A a)](pics/ultimate-heathkit-a-1.JPG)
 
-Here is [a YT video.](https://youtu.be/EdnRqnlCDcE)
+Here is [a YT video.](https://youtu.be/SLuOrD5KGnc)
 
 ### October 2025
 
