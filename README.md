@@ -276,7 +276,7 @@ The following types are supported; each host system is described in
 more detail below.
 
 - `HEATHKIT`: stock Heathkit ET-3400. PicoRAM plugs into the `IC14` and `IC17` 2112 SRAM sockets and provides 512 bytes or 1 KB of SRAM (configurable).
-- `ET-3400A`: stock Heathkit ET-3400A. PicoRAM plugs into the `U14` and `U15` 2111 SRAM sockets and provides 512 Bytes of SRAM (*not* 1 KB, see below for an explanation).
+- `ET-3400A`: stock Heathkit ET-3400A. PicoRAM plugs into the `U14` and `U15` 2114 SRAM sockets and provides 512 Bytes of SRAM (*not* 1 KB, see below for an explanation).
 - `HEATHKIT+`: Heathkit ET-3400 with extension header. PicoRAM plugs onto the extension header and provides 2 KBs of SRAM. This required an additional address decoder (a GAL16V8). See below for details. 
 - `LABVOLT`: Lab-Volt 6502 trainer. PicoRAM plugs into the `RAM (D0-D3)` and `RAM (D4-D7)` 2114 sockets and provides 1 KB of SRAM. 
 - `MASTERLAB`: Philips MC6400 MasterLab. PicoRAM plugs into the 2 2114 SRAM sockets and provides 1 KB of SRAM. 
