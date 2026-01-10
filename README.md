@@ -16,7 +16,8 @@ FAT file system facilitates data / file exchange with the PC or Mac.
 ![PicoRAM Heathkit](pics/ultimate-heathkit1.JPG)
 
 Currently supported SBCs / host machines are:
-- Stock Heathkit ET-3400 (*not* ET-3400a): MC6800 CPU, either 2x 2112 (512 Bytes) or 4x 2112 (1 KB) 
+- Stock Heathkit ET-3400: MC6800 CPU, either 2x 2112 (512 Bytes) or 4x 2112 (1 KB)
+- Stock Heathkit ET-3400A: MC6808 CPU, 2x 2114 (1 KB)
 - Heathkit ET-3400 memory expansion mode: MC6800 CPU, 2 KBs via expansion header and additional GAL16V8 address decoder 
 - Multitech Microprofessor MPF-1, MPF-1B and MPF-1P: Z80 CPU, 1x 6116, 2 KBs  
 - Lab-Volt 6502: 6502 CPU, 2x 2114, 1 KB
@@ -39,6 +40,17 @@ currently suported machines (with the exception of the MPF-1P):
 ![YouTube Video](pics/youtube.jpg)
 
 ## Latest News
+
+### January 2026
+
+The stock Heathkit ET-3400A is supported by now - firmware version 1.6 
+has been uploaded. 
+
+![ET-3400A a)](pics/ultimate-heathkit-a-1.JPG)
+
+![ET-3400A b)](pics/ultimate-heathkit-a-2.JPG)
+
+Here is [a YT video.](https://youtu.be/EdnRqnlCDcE)
 
 ### October 2025
 
@@ -127,8 +139,9 @@ jumper settings can be found on the PCB as well:
 
 ## Features 
 
-- Supports multiple host machines: ET-3400, Lab-Volt 6502,
-  Microprofessor MPF-1 series, and Philips MasterLab MC6400.
+- Supports multiple host machines: ET-3400 (6800), ET-3400a (6808),
+  Lab-Volt 6502, Microprofessor MPF-1 (Z80) series, and Philips MasterLab
+  MC6400 (INS8070).
 
 - Convenient PicoRAM configuration: PicoRAM has one universal firmware
   that supports all host machines; the host machine is specified in
@@ -264,10 +277,11 @@ determines the machine type.
 The following types are supported; each host system is described in
 more detail below.
 
-- `ET3400`: stock Heathkit ET-3400. PicoRAM plugs into the `IC14` and `IC17` 2112 SRAM sockets and provides 512 bytes or 1 KB of SRAM (configurable). 
-- `ET3400_EXP`: Heathkit ET-3400 with extension header. PicoRAM plugs onto the extension header and provides 2 KBs of SRAM. This required an additional address decoder (a GAL16V8). See below for details. 
+- `HEATHKIT`: stock Heathkit ET-3400. PicoRAM plugs into the `IC14` and `IC17` 2112 SRAM sockets and provides 512 bytes or 1 KB of SRAM (configurable).
+- `ET-3400A`: stock Heathkit ET-3400A. PicoRAM plugs into the `U14` and `U15` 2111 SRAM sockets and provides 1 KB of SRAM. 
+- `HEATHKIT+`: Heathkit ET-3400 with extension header. PicoRAM plugs onto the extension header and provides 2 KBs of SRAM. This required an additional address decoder (a GAL16V8). See below for details. 
 - `LABVOLT`: Lab-Volt 6502 trainer. PicoRAM plugs into the `RAM (D0-D3)` and `RAM (D4-D7)` 2114 sockets and provides 1 KB of SRAM. 
-- `MC6400`: Philips MC6400 MasterLab. PicoRAM plugs into the 2 2114 SRAM sockets and provides 1 KB of SRAM. 
+- `MASTERLAB`: Philips MC6400 MasterLab. PicoRAM plugs into the 2 2114 SRAM sockets and provides 1 KB of SRAM. 
 - `MPF`: Multitech Microprofessor MPF-1, MPF-1B, MPF-1P. PicoRAM plugs into the `U8` 6116 socket on the MPF-1(B), or the
   `U5` 6116 socket on the MPF-1P and provides 2 KBs of SRAM. 
 
@@ -292,7 +306,7 @@ no upgraded crystal*, and that you will need a jumper cable from the
 connector, as shown in the above picture.
 
 **The machine type string (1st line in the `ULTIMATE.INI`) is
-``ET3400``.**
+``HEATHKIT``.**
 
 The jumper configuration for this mode is: 
 
@@ -304,6 +318,37 @@ Where `*` = don't care and for `N`:
 
 - L: 4x 2112 (IC14 - IC17), `0x0000` - `0x00FF` and `0x0100` - `0x01ff`, 512 bytes
 - R: 2x 2112 (IC14, IC15),  `0x0000` - `0x00FF`, 256 bytes 
+
+### Stock Heathkit ET-3400A without Expansion Header
+
+The Heatkit ET-3400A is a Motorola MC6808-based CPU trainer from ~1976,
+the successor of the ET-3400. It is quite a bit faster than the ET-3400,
+uses a 6808 instead of of the 6800, and 2 2114 SRAM chips instead of the
+2 (or 4) 2112 SRAM chips in the ET-3400. 
+
+The stock system comes with 2 2114 SRAM chips (`U14` and `U15`),
+amounting to 1 KB.  In this configuration, PicoRAM connects to `U14`
+and `U15` via a ribbon cable connector and can emulate 1 KB of memory
+in the address range `0x0000 - 0x01ff`.
+
+![ET-3400a Stock Config](pics/ultimate-heathkit-a-1.JPG)
+
+![ET-3400a Stock Config 2](pics/ultimate-heathkit-a-2.JPG)
+
+You will also need a jumper cable from the `HALT` pin of PicoRAM's
+`J3` header to the ET-3400's `HALT` breadboard connector, as shown in
+the above picture.
+
+**The machine type string (1st line in the `ULTIMATE.INI`) is
+``ET-3400A``.**
+
+The jumper configuration for this mode is: 
+
+| JP1 | JP2 | JP3 | JP4 | JP5 | JP6 | JP7 | JP8 | JP9 | A9 | A10 | 
+|-----|-----|-----|-----|-----|-----|-----|-----|-----|----|-----|
+| *   | R   | *   | R   | R   | *   | R   | R   | R   | D  | D   | 
+
+Where `*` = don't care.
 
 ### Stock Heathkit ET-3400 with Expansion Header
 
@@ -317,7 +362,7 @@ with no upgraded crystal with an installed (and fully wired-up)
 expansion header.*
 
 The machine type string (1st line in the `ULTIMATE.INI`) is
-``ET3400_EXP``.
+``HEATHKIT+``.
 
 PicoRAM plugs onto the expansion header: 
 
@@ -420,7 +465,7 @@ bit of soldering skills you will have no issues accomplishing this:
 ![MasterLab Mod 2](pics/masterlab-mod2.jpg)
 
 The machine type string (1st line in the `ULTIMATE.INI`) is
-``MC6400``. 
+`MASTERLAB``. 
 
 The jumper settings are as follows: 
 

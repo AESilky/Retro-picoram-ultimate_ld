@@ -21,7 +21,7 @@
 //
 //
 
-#define VERSION "v1.6 01-09-2026"
+#define VERSION "v1.5 10-17-2025"
 
 //
 // Supported Machines
@@ -31,7 +31,6 @@ typedef enum {
   UNKNOWN, 
   ET3400,
   ET3400_EXP,
-  ET3400A, 
   LABVOLT,
   MC6400, 
   MPF
@@ -652,7 +651,7 @@ void display_loop_et3400() {
 	else
 	  clear_screen(); 	  
 
-	break; 
+	break;
 
       default :
 	
@@ -678,254 +677,6 @@ void display_loop_et3400() {
     } 
   }
   
-}
-
-void display_loop_et3400a() {    
-
-  disp_mode cur_disp_mode = ON; 
-  button_state buttons = NONE; 
-
-  //
-  //
-  //
-
-  if (TUNE_ADC) {
-
-    reset_hold(); 
-    clear_screen();       
-
-    adc_select_input(1); 
-    print_string(0,0,"BUTTON TUNING ");   
-    print_string(0,1,"----------------");
-    wait_for_button_release_raw();
-    sleep_ms(DISPLAY_DELAY_LONG); 
-    sleep_ms(DISPLAY_DELAY_LONG); 
-
-    CANCEL_ADC = 0;
-    uint32_t CANCEL_ADC_MIN = 0xFFF; 
-    for (int i = 1; i < 6; i++) {
-      print_string(0,2,"PUSH CANCEL (%d) ", i);
-      wait_for_button_raw(); 
-      print_string(0,3,"ADC:%03x", adc);
-      CANCEL_ADC = max(adc, CANCEL_ADC);
-      CANCEL_ADC_MIN = min(adc, CANCEL_ADC_MIN);
-    }
-    CANCEL2_ADC = avg(CANCEL_ADC, 0xFFF); 
-    
-    OK_ADC = 0;
-    uint32_t OK_ADC_MIN = 0xFFF; 
-    for (int i = 1; i < 6; i++) {
-      print_string(0,2,"PUSH OK (%d)     ", i);
-      wait_for_button_raw(); 
-      print_string(0,3,"ADC:%03x", adc);
-      OK_ADC = max(adc, OK_ADC);
-      OK_ADC_MIN = min(adc, OK_ADC_MIN);
-    }
-    OK_ADC = avg(OK_ADC, CANCEL_ADC_MIN); 
-
-    BACK_ADC = 0;
-    uint32_t BACK_ADC_MIN = 0xFFF; 
-    for (int i = 1; i < 6; i++) {
-      print_string(0,2,"PUSH NXT/PRV (%d)", i);
-      wait_for_button_raw(); 
-      print_string(0,3,"ADC:%03x", adc);
-      BACK_ADC = max(adc, BACK_ADC); 
-      BACK_ADC_MIN = min(adc, BACK_ADC_MIN);
-    }
-    BACK_ADC = avg(BACK_ADC, OK_ADC_MIN); 
-
-    DOWN_ADC = 0;
-    uint32_t DOWN_ADC_MIN = 0xFFF; 
-    for (int i = 1; i < 6; i++) {
-      print_string(0,2,"PUSH DOWN (%d)   ", i);
-      wait_for_button_raw(); 
-      print_string(0,3,"ADC:%03x", adc);
-      DOWN_ADC = max(adc, DOWN_ADC); 
-      DOWN_ADC_MIN = min(adc, DOWN_ADC_MIN);
-    }
-    DOWN_ADC = avg(DOWN_ADC, BACK_ADC_MIN); 
-
-    UP_ADC = 0;
-    for (int i = 1; i < 6; i++) {
-      print_string(0,2,"PUSH UP (%d)     ", i);
-      wait_for_button_raw(); 
-      print_string(0,3,"ADC:%03x", adc);
-      UP_ADC = max(adc, UP_ADC); 
-    }
-    UP_ADC = avg(UP_ADC, DOWN_ADC_MIN); 
-
-    clear_screen();       
-    print_string(0,0,"TUNING COMPLETE!");
-    print_string(0,1,"----------------");
-    print_string(0,2,"Save ADC.INI?");
-    if (! wait_for_yes_no_button()) {
-      print_string(0,3,"*** CANCELED ***");
-      sleep_ms(DISPLAY_DELAY);
-      sleep_ms(DISPLAY_DELAY);
-      sleep_ms(DISPLAY_DELAY);
-      return;
-    } else {
-      save_buttons_config_file(); 
-    }
-  } 
-
-  //
-  //
-  //
-
-  if (DEBUG_ADC) {
-
-    reset_hold(); 
-    clear_screen();       
-
-    while (true) {
-      adc_select_input(1); 
-      print_string(0,1,"ADC:%03x       ", adc_read());
-      sleep_ms(ADC_DEBUG_DELAY);       
-    }    
-  }
-
-  //
-  //
-  // 
-  
-  while (true) {
-
-    adc = adc_read();
-
-    if (adc <= CANCEL2_ADC) {
-
-      if (adc <= UP_ADC) {
-        buttons =  UP; 
-      } else if (adc <= DOWN_ADC) {
-        buttons = DOWN; 
-      } else if (adc <= BACK_ADC) { 
-        buttons = BACK; 
-      } else if (adc <= OK_ADC) {
-        buttons = OK; 
-      } else if (adc <= CANCEL_ADC) {
-        buttons = CANCEL; 
-      } else {
-        buttons = CANCEL2; 
-      }
-
-      reset_hold();  
-      confirmed = false;
-      disabled = true;
-
-      // in case it is in the 2nd part of the busy loop... 
-      read = true; 
-      written = true;
-
-      //while (!confirmed) {};
-
-      switch (buttons) {
-	
-      case UP: 
-        // LOAD
-        pgm1();
-        sleep_ms(DISPLAY_DELAY);
-        sleep_ms(DISPLAY_DELAY);
-        if (cur_disp_mode == ON) 
-          show_info();
-        else
-          clear_screen();         
-
-        break;
-        
-      case DOWN: 
-        // SAVE
-        pgm2();
-        sleep_ms(DISPLAY_DELAY);
-        sleep_ms(DISPLAY_DELAY);
-        if (cur_disp_mode == ON) 
-          show_info();
-        else
-          clear_screen();         
-
-        break;
-        
-      case BACK:
-        // CHANGE CUR BANK
-
-        cur_bank = (cur_bank + 1) % (MAX_BANKS);
-
-        clear_screen();
-        sprintf(text_buffer, "BANK #%1x", cur_bank); 
-        WriteString(buf, 0, 0, text_buffer);
-        render(buf, &frame_area);
-        sleep_ms(DISPLAY_DELAY);
-        sleep_ms(DISPLAY_DELAY);
-        if (cur_disp_mode == ON) 
-          show_info();
-        else
-          clear_screen();         
-
-        break;
-
-      case OK:
-
-        clear_screen();
-        sprintf(text_buffer, "CLEAR BANK #%1x?", cur_bank); 
-        WriteString(buf, 0, 0, text_buffer);
-        render(buf, &frame_area);
-        wait_for_button_release(); 
-
-        if ( wait_for_yes_no_button()) {
-          clear_bank(cur_bank);
-          print_string(0,3,"CLEARED!");
-        } else 
-          print_string(0,3,"CANCELED!");       
-
-        sleep_ms(DISPLAY_DELAY);
-        sleep_ms(DISPLAY_DELAY);
-        if (cur_disp_mode == ON) 
-          show_info();
-        else
-          clear_screen();         
-       
-        break; 
-
-      case CANCEL:
-        
-        if (cur_disp_mode == OFF ) 
-          cur_disp_mode = ON; 
-        else
-          cur_disp_mode = OFF; 
-
-        sleep_ms(DISPLAY_DELAY);
-        sleep_ms(DISPLAY_DELAY);
-
-        if (cur_disp_mode == ON) 
-          show_info();
-        else
-          clear_screen();         
-
-        break;
-	
-      default :
-
-	clear_screen();
-	sprintf(text_buffer, "ADC #%1x KEY #%1x", adc, buttons); 
-	print_string(0,1,"*  ADC GLITCH  *"); 
-	print_string(0,2,"* BUTTON PRESS *"); 
-	print_string(0,3,"* CONFIG ERROR *");
-	WriteString(buf, 0, 3, text_buffer);
-	render(buf, &frame_area);
-
-	sleep_ms(DISPLAY_DELAY);
-	sleep_ms(DISPLAY_DELAY);
-	sleep_ms(DISPLAY_DELAY);
-	sleep_ms(DISPLAY_DELAY);
-        
-      } 
-
-      gpio_put(LED_PIN, 0);
-      disabled = false;
-      reset_release(); 
-      
-    }
-  }
 }
 
 
@@ -1344,9 +1095,6 @@ int sd_read_init() {
     if (prefix("HEATHKIT+", MACHINE)) {
       strcpy(MACHINE, "ET-3400 EXPANDED"); 
       MACHINE_T = ET3400_EXP;
-    } else if (prefix("ET-3400A", MACHINE)) {
-      strcpy(MACHINE, "ET-3400 A      "); 
-      MACHINE_T = ET3400A;
     } else if (prefix("HEATHKIT", MACHINE)) {
       strcpy(MACHINE, "ET-3400 STOCK  "); 
       MACHINE_T = ET3400;
@@ -2555,73 +2303,6 @@ void main_labvolt(void) {
 }
 
 
-void main_et3400a(void) {
-
-  read = false; 
-  written = false; 
-  confirmed = false; 
-
-  gpio_set_dir_masked(data_mask, 0);
-  gpio_put(SEL1, 0);
-  gpio_put(SEL2, 1);
-
-  reset_release();   
- 
-  while (true) {   
-
-    if ( ! gpio_get(CE_INPUT) ) { 
-
-      gpio_put(SEL1, 1);
-      gpio_put(SEL2, 0);
-
-      /* __asm volatile(" nop\n nop\n nop\n nop\n nop\n nop\n nop\n\n"); 	
-	 high_adr = (((gpio_get_all() & addr_mask) >> ADR_INPUTS_START ) ) << 6; // A6 - A10
-	 low_adr = ((low_adr & addr_mask) >> ADR_INPUTS_START ) ; // A0 - A5
-	 m_adr = ( low_adr | high_adr ) & 0b001111111111; */ 
-
-      if (gpio_get(WE_INPUT) ) {
-
-	__asm volatile(" nop\n nop\n nop\n nop\n nop\n nop\n nop\n\n"); 	
-	high_adr = (((gpio_get_all() & addr_mask) >> ADR_INPUTS_START ) ) << 6; // A6 - A10
-	low_adr = ((low_adr & addr_mask) >> ADR_INPUTS_START ) ; // A0 - A5 */ 
-	m_adr = ( low_adr | high_adr ) & 0b001111111111; 
-
-                  
-        w_op = ram[cur_bank][m_adr]; 
-        gpio_set_dir_masked(data_mask, data_mask);
-        gpio_put_masked(data_mask, w_op << DATA_GPIO_START);
-
-
-      }  else {
-
-	__asm volatile(" nop\n nop\n nop\n nop\n nop\n nop\n nop\n\n"); 	
-	high_adr = (((gpio_get_all() & addr_mask) >> ADR_INPUTS_START ) ) << 6; // A6 - A10
-	low_adr = ((low_adr & addr_mask) >> ADR_INPUTS_START ) ; // A0 - A5 */ 
-	m_adr = ( low_adr | high_adr ) & 0b001111111111; 
-
-      
-        r_op = (gpio_get_all() & data_mask) >> DATA_GPIO_START ;
-        ram[cur_bank][m_adr] = r_op;
-
-      }
-
-      while ( ! gpio_get(CE_INPUT) ) {__asm volatile(" nop\n\n");  }; 
-
-      gpio_put(SEL1, 0);
-      gpio_put(SEL2, 1);
-      gpio_set_dir_masked(data_mask, 0);
-     
-    } else {
-
-      // low_adr = ((gpio_get_all() & addr_mask) >> ADR_INPUTS_START ) & 0b111111; // A0 - A5
-      low_adr = gpio_get_all(); 
-    
-    }
-  }
-
-}
-
-
 void main_mpf(void) {
 
   read = false; 
@@ -2808,7 +2489,7 @@ int main() {
 
     // ONLY needed for LABVOLT! 
     // see below, where this enabled for the LABVOLT ONLY 
-    gpio_set_input_hysteresis_enabled(gpio, false);
+    // gpio_set_input_hysteresis_enabled(gpio, false);
 
   }
 
@@ -2889,12 +2570,11 @@ int main() {
   //
   switch (MACHINE_T) {
     
-  case ET3400 :
+  case ET3400 : 
   case ET3400_EXP : multicore_launch_core1(display_loop_et3400); break;
-  case ET3400A : multicore_launch_core1(display_loop_et3400a); break;
     
   case MPF : multicore_launch_core1(display_loop_et3400); break;
-  
+
   default : multicore_launch_core1(display_loop);
     
   }
@@ -2903,7 +2583,7 @@ int main() {
   //
   //
 
-  if (MACHINE_T == LABVOLT || MACHINE_T == ET3400A) {
+  if (MACHINE_T == LABVOLT ) {
     for (gpio = ADR_INPUTS_START; gpio < DATA_GPIO_START; gpio++) {
       gpio_set_input_hysteresis_enabled(gpio, false);
     } 
@@ -2921,7 +2601,6 @@ int main() {
   switch (MACHINE_T) {
   case UNKNOWN : show_error_and_halt("BAD CONFIG!"); break;
   case ET3400 : main_et3400(); break; // for Heathkit Stock 4x 2112 
-  case ET3400A : main_et3400a(); break; 
   case ET3400_EXP : main_et3400_exp(); break; // for Heathkit Expansion Header
   case LABVOLT : main_labvolt(); break; 
   case MC6400 : main_mc6400(); break; 
