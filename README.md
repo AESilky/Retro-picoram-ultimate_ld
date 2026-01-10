@@ -319,16 +319,16 @@ Where `*` = don't care and for `N`:
 
 ### Stock Heathkit ET-3400A without Expansion Header
 
-The Heatkit ET-3400A is a Motorola MC6808-based CPU trainer from ~1976,
-the successor of the ET-3400. It is quite a bit faster than the ET-3400,
-uses a 6808 instead of of the 6800, and 2 2114 SRAM chips instead of the
-2 (or 4) 2112 SRAM chips in the ET-3400. 
+The Heatkit ET-3400A is a Motorola MC6808-based CPU trainer from
+~1976, the successor of the ET-3400. It is quite a bit faster than the
+ET-3400, uses a 6808 instead of the 6800, and 2 2114 SRAM chips
+instead of the 2 (or 4) 2112 SRAM chips in the ET-3400.
 
 The stock system comes with 2 2114 SRAM chips (`U14` and `U15`),
 providing 512 Bytes from `0x0000 - 0x01ff`. Interestingly, only 512
 Bytes are utilized by the ET-3400A instead of the full 1 KB provided
 by the 2 2114, as the Heathkit designers did not connect the 10th
-address bit (A9) to `U14`, `U15`. 
+address bit (A9) to `U14`, `U15`.
 
 ![ET-3400a Stock Config](pics/ultimate-heathkit-a-1.JPG)
 
