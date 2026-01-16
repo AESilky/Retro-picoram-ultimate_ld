@@ -441,7 +441,7 @@ two pictures:**
 ![RE Fix 2](pics/picoram-re-bug-2.jpg)
 
 The jumper settings are as follows (plus RE jumper cable into the RE
-sockets) - not that the silkscreen table is incorrect, due
+sockets) - note that the silkscreen table is incorrect, due
 to JP9: 
 
 
