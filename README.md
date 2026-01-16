@@ -43,8 +43,8 @@ currently suported machines (with the exception of the MPF-1P):
 
 ### January 2026
 
-**Unfortunately, the current version of PicoRAM Ultimate has a PCB bug
-- the position of the RE signal on the header is incorrect. Appologies
+**Unfortunately, the current version of PicoRAM Ultimate has a PCB bug: 
+the position of the RE signal on the header is incorrect. Appologies
 for that.**
 
 You can see that in the schematics here:
@@ -422,10 +422,11 @@ file](firmware/v1.0/et3400_decoder_16v8_gal.jed) (i.e., for
 programming a 16V8 GAL with a standard TL-866 EPROM programmer and
 MiniPro).
 
-Originally, PicoRAM Ultimate was designed in such a way that **JP9 could
-be used in left jumper position** to route the generated GAL-generated
-RE signal into the IO expansion header's RE signal. However, since I
-wired it up incorrectly in my ET-3400, this won't work with your ET-3400: 
+Originally, PicoRAM Ultimate was designed in such a way that **JP9
+could be used in left jumper position** to route the GAL-generated RE
+signal into the IO expansion header's RE pin. However, since I wired
+it up incorrectly in my ET-3400, this won't work with your ET-3400 -
+it only works with mine: 
 
 ![ET-3400 Expanded 1](pics/ultimate-heathkit-exp1.JPG)
 
@@ -463,13 +464,15 @@ of RAM):
 The machine type string (1st line in the `ULTIMATE.INI`) is
 ``LABVOLT``. 
 
-The jumper settings are as follows: 
+The jumper settings are as follows - note that the silkscreen
+table is incorrect as well here, due to JP9 which can't be used.
+Use the following configuration:
 
 | JP1 | JP2 | JP3 | JP4 | JP5 | JP6 | JP7 | JP8 | JP9 | A9 | A10 | 
 |-----|-----|-----|-----|-----|-----|-----|-----|-----|----|-----|
-| *   | R   | *   | R   | N   | L   | R   | R   | *   | D  | D   | 
+| *   | R   | *   | R   | N   | L   | R   | R   | -   | D  | D   | 
 
-Where `*` = don't care and for `N`: 
+Where `*` = don't care, `-` = don't use, and for `N`: 
 
 - R: 2x 2114, `0x0000` - `0x03FF`, 1 KB  
 
