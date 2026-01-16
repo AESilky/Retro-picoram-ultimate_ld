@@ -441,14 +441,17 @@ two pictures:**
 ![RE Fix 2](pics/picoram-re-bug-2.jpg)
 
 The jumper settings are as follows (plus RE jumper cable into the RE
-sockets): 
+sockets) - not that the silkscreen table is incorrect, due
+to JP9: 
 
 
 | JP1 | JP2 | JP3 | JP4 | JP5 | JP6 | JP7 | JP8 | JP9 | A9 | A10 | 
 |-----|-----|-----|-----|-----|-----|-----|-----|-----|----|-----|
-| *   | R   | *   | L   | *   | L   | R   | L   | *   | D  | D   |
+| *   | R   | *   | L   | *   | L   | R   | L   | -   | D  | D   |
 
-![ET-3400 Expanded 2](pics/ultimate-heathkit-exp2.JPG)
+Here, `-` means: don't use.
+
+![ET-3400 Expanded 2](pics/ultimate-heathkit-exp3.JPG)
 
 
 ### Lab-Volt 6502 
@@ -464,15 +467,13 @@ of RAM):
 The machine type string (1st line in the `ULTIMATE.INI`) is
 ``LABVOLT``. 
 
-The jumper settings are as follows - note that the silkscreen
-table is incorrect as well here, due to JP9 which can't be used.
-Use the following configuration:
+The jumper settings are as follows: 
 
 | JP1 | JP2 | JP3 | JP4 | JP5 | JP6 | JP7 | JP8 | JP9 | A9 | A10 | 
 |-----|-----|-----|-----|-----|-----|-----|-----|-----|----|-----|
-| *   | R   | *   | R   | N   | L   | R   | R   | -   | D  | D   | 
+| *   | R   | *   | R   | N   | L   | R   | R   | *   | D  | D   | 
 
-Where `*` = don't care, `-` = don't use, and for `N`: 
+Where `*` = don't care and for `N`: 
 
 - R: 2x 2114, `0x0000` - `0x03FF`, 1 KB  
 
