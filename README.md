@@ -43,6 +43,39 @@ currently suported machines (with the exception of the MPF-1P):
 
 ### January 2026
 
+**Unfortunately, the current version of PicoRAM Ultimate has a PCB bug
+- the position of the RE signal on the header is incorrect. Appologies
+for that.**
+
+You can see that in the schematics here:
+
+![Wrong RE Signal](pics/wrong-header.png)
+
+When I wired up the IO header on my ET-3400, I flipped left and right
+and put it on pins 30 and 29 instead of 12 and 11, where they should
+have been.
+
+I only noticed now, with my new ET-3400A, which already came with the
+RE signal wired up on the IO header (I only had to install the data
+lines), that the position didn't match. And indeed, the ET-3400A
+schematics lists the RE pin positions as follows - you see the difference:
+
+![Correct RE Signal](pics/et3400a-header.png)
+
+There is an easy fix for this - don't use JP9, but a DuPont wire that
+runs directly into the breadboard RE signal, as shown in these
+pictures:
+
+![RE Fix 1](pics/picoram-re-bug-1.jpg)
+
+![RE Fix 2](pics/picoram-re-bug-2.jpg)
+
+Eventually, I will create a new PCB version with this bug fix. But for
+now, the workaround is sufficient. 
+
+
+### January 2026
+
 The stock Heathkit ET-3400A is supported by now - firmware version 1.6 
 has been uploaded. 
 
@@ -354,7 +387,7 @@ Where `*` = don't care.
 If your ET-3400 has the expansion header installed, PicoRAM Ultimate
 can upgrade your machine to 2 KBs, address range: `0x0000 - 0x07ff`.
 
-![ET-3400 Expanded 1](pics/ultimate-heathkit-exp1.JPG)
+![ET-3400 Expanded 1](pics/picoram-re-bug-1.jpg)
 
 Note that this applies to the ET-3400 with *original stock MC6800 CPU
 with no upgraded crystal with an installed (and fully wired-up)
@@ -378,18 +411,8 @@ The databus and `RE` signal mods are also described in the
 
 ![ET-3400 Exp.Header 4](pics/expheaderinst.jpg)
 
-The pinout of the expansion header is as follows: 
-
-![ET-3400 Exp.Header 4](pics/et3400-connector.jpg)
-
-Note that the `RE` signal is shown as `NC` in this pinout, between
-`A12 A13` and `A2 A3`. Unlike depicted by Pictorial 1-6, the resistor
-and diode are not required for PicoRAM Ultimate. However, if already
-fitted and installed, they shouldn't cause problems for PicoRAM either
-(but I haven't tried). Alternatively, you can simply route a jumper
-wire from the `RE` pin of PicoRAM's `J3` header to the corresponding
-breadboard connector (but the expansion port `RE` connection is
-cleaner).
+**Unfortunately, I installed the RE signal incorrectly in my ET-3400 when
+I installed the mod. Please read further.**
 
 For this mode, the 16V8 GAL chip `U10` **must** be installed, as the
 RAM select signal can not longer be generated from the SRAM sockets,
@@ -399,12 +422,30 @@ file](firmware/v1.0/et3400_decoder_16v8_gal.jed) (i.e., for
 programming a 16V8 GAL with a standard TL-866 EPROM programmer and
 MiniPro).
 
-The jumper settings are as follows: 
+Originally, PicoRAM Ultimate was designed in such a way that **JP9 could
+be used in left jumper position** to route the generated GAL-generated
+RE signal into the IO expansion header's RE signal. However, since I
+wired it up incorrectly in my ET-3400, this won't work with your ET-3400: 
+
+![ET-3400 Expanded 1](pics/ultimate-heathkit-exp1.JPG)
+
+**Eventually, I will re-design the PCB and fix this bug - stay tuned, updates
+soon!** 
+
+**Instead, you will have to use a DuPont jumper wire as shown in the following
+two pictures:**
+
+![RE Fix 1](pics/picoram-re-bug-1.jpg)
+
+![RE Fix 2](pics/picoram-re-bug-2.jpg)
+
+The jumper settings are as follows (plus RE jumper cable into the RE
+sockets): 
 
 
 | JP1 | JP2 | JP3 | JP4 | JP5 | JP6 | JP7 | JP8 | JP9 | A9 | A10 | 
 |-----|-----|-----|-----|-----|-----|-----|-----|-----|----|-----|
-| *   | R   | *   | L   | *   | L   | R   | L   | L   | D  | D   |
+| *   | R   | *   | L   | *   | L   | R   | L   | *   | D  | D   |
 
 ![ET-3400 Expanded 2](pics/ultimate-heathkit-exp2.JPG)
 
