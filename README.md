@@ -449,7 +449,8 @@ to JP9:
 |-----|-----|-----|-----|-----|-----|-----|-----|-----|----|-----|
 | *   | R   | *   | L   | *   | L   | R   | L   | -   | D  | D   |
 
-Here, `-` means: don't use.
+Here, `-` means: don't use, but connect the DuPont jumper wire
+to the left pin of JP9 and route it into the RE socket.
 
 ![ET-3400 Expanded 2](pics/ultimate-heathkit-exp3.JPG)
 
