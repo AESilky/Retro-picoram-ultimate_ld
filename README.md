@@ -339,13 +339,14 @@ connector, as shown in the above picture.
 **The machine type string (1st line in the `ULTIMATE.INI`) is
 ``HEATHKIT``.**
 
-The jumper configuration for this mode is: 
+The jumper configuration for this mode is (note: the silkscreen on the
+current PCB is incorrect, use these settings!): 
 
 | JP1 | JP2 | JP3 | JP4 | JP5 | JP6 | JP7 | JP8 | JP9 | A9 | A10 | 
 |-----|-----|-----|-----|-----|-----|-----|-----|-----|----|-----|
-| *   | L   | N   | R   | *   | R   | R   | L   | R   | U  | U   | 
+| *   | R   | N   | R   | *   | R   | R   | L   | -   | U  | U   | 
 
-Where `*` = don't care and for `N`: 
+Where `*` = don't care, `-` for NO JUMPER INSTALLED, and for `N`: 
 
 - L: 4x 2112 (IC14 - IC17), `0x0000` - `0x00FF` and `0x0100` - `0x01ff`, 512 bytes
 - R: 2x 2112 (IC14, IC15),  `0x0000` - `0x00FF`, 256 bytes 
@@ -374,13 +375,14 @@ the above picture.
 **The machine type string (1st line in the `ULTIMATE.INI`) is
 ``ET-3400A``.**
 
-The jumper configuration for this mode is: 
+The jumper configuration for this mode is (note that the 
+silkscreen of the current PCB doesn't list the ET-3400A configuration): 
 
 | JP1 | JP2 | JP3 | JP4 | JP5 | JP6 | JP7 | JP8 | JP9 | A9 | A10 | 
 |-----|-----|-----|-----|-----|-----|-----|-----|-----|----|-----|
-| *   | R   | *   | R   | *   | *   | R   | R   | R   | D  | D   | 
+| *   | R   | *   | R   | *   | *   | R   | R   | -   | D  | D   | 
 
-Where `*` = don't care.
+Where `*` = don't care, and  `-` for NO JUMPER INSTALLED,
 
 ### Stock Heathkit ET-3400 with Expansion Header
 
@@ -447,10 +449,10 @@ to JP9:
 
 | JP1 | JP2 | JP3 | JP4 | JP5 | JP6 | JP7 | JP8 | JP9 | A9 | A10 | 
 |-----|-----|-----|-----|-----|-----|-----|-----|-----|----|-----|
-| *   | R   | *   | L   | *   | L   | R   | L   | -   | D  | D   |
+| *   | R   | *   | L   | *   | L   | R   | L   | +   | D  | D   |
 
-Here, `-` means: don't use, but connect the DuPont jumper wire
-to the left pin of JP9 and route it into the RE socket.
+Here, `+` means: **pull the jumper, but connect the DuPont jumper wire
+to the left pin of JP9 and route it into the RE socket.**
 
 ![ET-3400 Expanded 2](pics/ultimate-heathkit-exp3.JPG)
 
