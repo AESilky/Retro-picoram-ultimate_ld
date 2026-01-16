@@ -44,7 +44,7 @@ currently suported machines (with the exception of the MPF-1P):
 ### January 2026
 
 **Unfortunately, the current version of PicoRAM Ultimate has a PCB bug: 
-the position of the RE signal on the header is incorrect. Appologies
+the position of the RE signal on the header is incorrect. Apologies
 for that.**
 
 You can see that in the schematics here:
