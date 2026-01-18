@@ -21,7 +21,7 @@
 //
 //
 
-#define VERSION "v1.7 01-17-2026"
+#define VERSION "v1.6 01-10-2026"
 
 //
 // Supported Machines
@@ -32,7 +32,6 @@ typedef enum {
   ET3400,
   ET3400_EXP,
   ET3400A, 
-  ET3400A_EXP, 
   LABVOLT,
   MC6400, 
   MPF
@@ -42,7 +41,7 @@ typedef enum {
 // ADC Configuration (ULTIMATE.INI file!) 
 // 
 
-#define FILE_LENGTH 20
+#define FILE_LENGTH 17
 #define FILE_BUFF_SIZE 20
 #define FILE_EXT "*.RAM" 
 
@@ -1349,10 +1348,7 @@ int sd_read_init() {
     if (prefix("HEATHKIT+", MACHINE)) {
       strcpy(MACHINE, "ET-3400 EXPANDED"); 
       MACHINE_T = ET3400_EXP;
-    } else if (prefix("HEATHKITA+", MACHINE)) {
-      strcpy(MACHINE, "ET-3400A EXPANDED"); 
-      MACHINE_T = ET3400A_EXP;
-    }else if (prefix("ET-3400A", MACHINE)) {
+    } else if (prefix("ET-3400A", MACHINE)) {
       strcpy(MACHINE, "ET-3400 A      "); 
       MACHINE_T = ET3400A;
     } else if (prefix("HEATHKIT", MACHINE)) {
@@ -1921,7 +1917,7 @@ void load_file(bool quiet) {
 
     break; 
     
-  case ET3400A : // note - the stock et3400a has A9 unconnected! hence, only 512 Bytes... reads as high...
+  case ET3400A : // note - the stock et3400a has A9 unconnected! hence, only 512 Bytes... reads as high... 
 
     for (uint32_t b = 0; b < 256; b++) {	
       ram[cur_bank][b+256] = flip_bytes(sdram[b]); 
@@ -2502,61 +2498,85 @@ void main_et3400(void) {
 
 }
 
-void main_et3400_exp(void) {
 
-  
+void main_labvolt(void) {
+
   read = false; 
   written = false; 
   confirmed = false; 
 
   gpio_set_dir_masked(data_mask, 0);
+  gpio_put(SEL1, 0);
+  gpio_put(SEL2, 1);
+
   reset_release();   
-
+ 
   while (true) {   
-    
+
     if (disabled ) {
-      gpio_put(LED_PIN, 1);
+
+      gpio_put(LED_PIN, 1);      
+      gpio_set_dir_masked(data_mask, 0);
       confirmed = true;
+      read = true; 
       while (disabled ) {}; 
-    }
 
-    while ( gpio_get(CE_INPUT) && ! disabled ) { // 135 ns (11000.... high clock!)    
-    
+    } else if (read) {
+
+      read = false; 
+      gpio_set_dir_masked(data_mask, 0);
       gpio_put(SEL1, 0);
-      low_adr = ((gpio_get_all() & addr_mask) >> ADR_INPUTS_START ) & 0b111111; // A0 - A5
-      gpio_put(SEL1, 1);
-    
-      gpio_put(SEL2, 0);
-      high_adr = (((gpio_get_all() & addr_mask) >> ADR_INPUTS_START ) & 0b011111) << 6; // A6 - A10
-      gpio_put(SEL2, 1);
 
-      m_adr = low_adr | high_adr;
+    }      
 
-    }
+    if ( ! gpio_get(CE_INPUT) ) { 
 
-    //
-    //
-    //
+      __asm volatile (" nop\n");
+         
+      if (gpio_get(WE_INPUT)) {
+          
+        low_adr = ((gpio_get_all() & addr_mask) >> ADR_INPUTS_START ) & 0b111111; // A0 - A5
 
-    read = false; 
-    written = false; 
+        gpio_put(SEL1, 1);
+        gpio_put(SEL2, 0);
+        
+        __asm volatile (" nop\n nop\n nop\n nop\n");
+        __asm volatile (" nop\n nop\n nop\n nop\n");
+        
+        high_adr = (((gpio_get_all() & addr_mask) >> ADR_INPUTS_START ) & 0b011111) << 6; // A6 - A10
+        
+        m_adr = low_adr | high_adr;
+        
+        w_op = ram[cur_bank][m_adr]; 
+        gpio_set_dir_masked(data_mask, data_mask);
+        gpio_put_masked(data_mask, w_op << DATA_GPIO_START);
 
-    while ( ! gpio_get(CE_INPUT) && ! disabled ) { 
+      }  else {
+        
+	low_adr = ((gpio_get_all() & addr_mask) >> ADR_INPUTS_START ) & 0b111111; // A0 - A5
 
-      if (! read && ! gpio_get(WE_INPUT)) {
-	gpio_set_dir_masked(data_mask, 0);
-	r_op = (gpio_get_all() & data_mask) >> DATA_GPIO_START ;
-	ram[cur_bank][m_adr] = r_op;
-	read = true;  
-      } else if (! written) {
-	w_op = ram[cur_bank][m_adr];   
-	gpio_set_dir_masked(data_mask, data_mask);	
-	gpio_put_masked(data_mask, (w_op << DATA_GPIO_START));
-	written = true;
+        gpio_put(SEL1, 1);
+        gpio_put(SEL2, 0);
+        
+        __asm volatile (" nop\n nop\n nop\n nop\n");
+        __asm volatile (" nop\n nop\n nop\n nop\n");
+        
+        high_adr = (((gpio_get_all() & addr_mask) >> ADR_INPUTS_START ) & 0b011111) << 6; // A6 - A10
+        
+        m_adr = low_adr | high_adr;
+      
+        r_op = (gpio_get_all() & data_mask) >> DATA_GPIO_START ;
+        ram[cur_bank][m_adr] = r_op;
+
+      } 
+      
+      while ( ! gpio_get(CE_INPUT) ) { 
+        __asm volatile (" nop\n");
       }
-    }
-    
-    gpio_set_dir_masked(data_mask, 0);
+
+      gpio_put(SEL2, 1);
+      read = true; 
+    } 
 
   }
 
@@ -2582,13 +2602,18 @@ void main_et3400a(void) {
       gpio_put(SEL1, 1);
       gpio_put(SEL2, 0);
 
+      /* __asm volatile(" nop\n nop\n nop\n nop\n nop\n nop\n nop\n\n"); 	
+	 high_adr = (((gpio_get_all() & addr_mask) >> ADR_INPUTS_START ) ) << 6; // A6 - A10
+	 low_adr = ((low_adr & addr_mask) >> ADR_INPUTS_START ) ; // A0 - A5
+	 m_adr = ( low_adr | high_adr ) & 0b001111111111; */ 
+
       if (gpio_get(WE_INPUT) ) {
 
 	__asm volatile(" nop\n nop\n nop\n nop\n nop\n nop\n nop\n\n"); 	
 	high_adr = (((gpio_get_all() & addr_mask) >> ADR_INPUTS_START ) ) << 6; // A6 - A10
 	low_adr = ((low_adr & addr_mask) >> ADR_INPUTS_START ) ; // A0 - A5 */ 
-	m_adr = ( low_adr | high_adr ) & 0b011111111111;
-	
+	m_adr = ( low_adr | high_adr ) & 0b001111111111; 
+
                   
         w_op = ram[cur_bank][m_adr]; 
         gpio_set_dir_masked(data_mask, data_mask);
@@ -2600,69 +2625,7 @@ void main_et3400a(void) {
 	__asm volatile(" nop\n nop\n nop\n nop\n nop\n nop\n nop\n\n"); 	
 	high_adr = (((gpio_get_all() & addr_mask) >> ADR_INPUTS_START ) ) << 6; // A6 - A10
 	low_adr = ((low_adr & addr_mask) >> ADR_INPUTS_START ) ; // A0 - A5 */ 
-	m_adr = ( low_adr | high_adr ) & 0b011111111111; 
-
-      
-        r_op = (gpio_get_all() & data_mask) >> DATA_GPIO_START ;
-        ram[cur_bank][m_adr] = r_op;
-
-      }
-
-      while ( ! gpio_get(CE_INPUT) ) {__asm volatile(" nop\n\n");  }; 
-
-      gpio_put(SEL1, 0);
-      gpio_put(SEL2, 1);
-      gpio_set_dir_masked(data_mask, 0);
-     
-    } else {
-
-      // low_adr = ((gpio_get_all() & addr_mask) >> ADR_INPUTS_START ) & 0b111111; // A0 - A5
-      low_adr = gpio_get_all(); 
-    
-    }
-  }
-
-}
-
-
-void main_et3400a_exp(void) {
-
-  read = false; 
-  written = false; 
-  confirmed = false; 
-
-  gpio_set_dir_masked(data_mask, 0);
-  gpio_put(SEL1, 0);
-  gpio_put(SEL2, 1);
-
-  reset_release();   
- 
-  while (true) {   
-
-    if ( ! gpio_get(CE_INPUT) ) { 
-
-      gpio_put(SEL1, 1);
-      gpio_put(SEL2, 0);
-
-      if (gpio_get(WE_INPUT) ) {
-
-	__asm volatile(" nop\n nop\n nop\n nop\n nop\n nop\n nop\n\n"); 	
-	high_adr = (((gpio_get_all() & addr_mask) >> ADR_INPUTS_START ) ) << 6; // A6 - A10
-	low_adr = ((low_adr & addr_mask) >> ADR_INPUTS_START ) ; // A0 - A5 */ 
-	m_adr = ( low_adr | high_adr ) & 0b011111111111;
-	
-                  
-        w_op = ram[cur_bank][m_adr]; 
-        gpio_set_dir_masked(data_mask, data_mask);
-        gpio_put_masked(data_mask, w_op << DATA_GPIO_START);
-
-
-      }  else {
-
-	__asm volatile(" nop\n nop\n nop\n nop\n nop\n nop\n nop\n\n"); 	
-	high_adr = (((gpio_get_all() & addr_mask) >> ADR_INPUTS_START ) ) << 6; // A6 - A10
-	low_adr = ((low_adr & addr_mask) >> ADR_INPUTS_START ) ; // A0 - A5 */ 
-	m_adr = ( low_adr | high_adr ) & 0b011111111111; 
+	m_adr = ( low_adr | high_adr ) & 0b001111111111; 
 
       
         r_op = (gpio_get_all() & data_mask) >> DATA_GPIO_START ;
@@ -2751,84 +2714,60 @@ void main_mpf(void) {
 }
 
 
-void main_labvolt(void) {
+void main_et3400_exp(void) {
 
   read = false; 
   written = false; 
   confirmed = false; 
 
   gpio_set_dir_masked(data_mask, 0);
-  gpio_put(SEL1, 0);
-  gpio_put(SEL2, 1);
-
   reset_release();   
- 
+
   while (true) {   
-
+    
     if (disabled ) {
-
-      gpio_put(LED_PIN, 1);      
-      gpio_set_dir_masked(data_mask, 0);
+      gpio_put(LED_PIN, 1);
       confirmed = true;
-      read = true; 
       while (disabled ) {}; 
+    }
 
-    } else if (read) {
-
-      read = false; 
-      gpio_set_dir_masked(data_mask, 0);
+    while ( gpio_get(CE_INPUT) && ! disabled ) { // 135 ns (11000.... high clock!)    
+    
       gpio_put(SEL1, 0);
-
-    }      
-
-    if ( ! gpio_get(CE_INPUT) ) { 
-
-      __asm volatile (" nop\n");
-         
-      if (gpio_get(WE_INPUT)) {
-          
-        low_adr = ((gpio_get_all() & addr_mask) >> ADR_INPUTS_START ) & 0b111111; // A0 - A5
-
-        gpio_put(SEL1, 1);
-        gpio_put(SEL2, 0);
-        
-        __asm volatile (" nop\n nop\n nop\n nop\n");
-        __asm volatile (" nop\n nop\n nop\n nop\n");
-        
-        high_adr = (((gpio_get_all() & addr_mask) >> ADR_INPUTS_START ) & 0b011111) << 6; // A6 - A10
-        
-        m_adr = low_adr | high_adr;
-        
-        w_op = ram[cur_bank][m_adr]; 
-        gpio_set_dir_masked(data_mask, data_mask);
-        gpio_put_masked(data_mask, w_op << DATA_GPIO_START);
-
-      }  else {
-        
-	low_adr = ((gpio_get_all() & addr_mask) >> ADR_INPUTS_START ) & 0b111111; // A0 - A5
-
-        gpio_put(SEL1, 1);
-        gpio_put(SEL2, 0);
-        
-        __asm volatile (" nop\n nop\n nop\n nop\n");
-        __asm volatile (" nop\n nop\n nop\n nop\n");
-        
-        high_adr = (((gpio_get_all() & addr_mask) >> ADR_INPUTS_START ) & 0b011111) << 6; // A6 - A10
-        
-        m_adr = low_adr | high_adr;
-      
-        r_op = (gpio_get_all() & data_mask) >> DATA_GPIO_START ;
-        ram[cur_bank][m_adr] = r_op;
-
-      } 
-      
-      while ( ! gpio_get(CE_INPUT) ) { 
-        __asm volatile (" nop\n");
-      }
-
+      low_adr = ((gpio_get_all() & addr_mask) >> ADR_INPUTS_START ) & 0b111111; // A0 - A5
+      gpio_put(SEL1, 1);
+    
+      gpio_put(SEL2, 0);
+      high_adr = (((gpio_get_all() & addr_mask) >> ADR_INPUTS_START ) & 0b011111) << 6; // A6 - A10
       gpio_put(SEL2, 1);
-      read = true; 
-    } 
+
+      m_adr = low_adr | high_adr;
+
+    }
+
+    //
+    //
+    //
+
+    read = false; 
+    written = false; 
+
+    while ( ! gpio_get(CE_INPUT) && ! disabled ) { 
+
+      if (! read && ! gpio_get(WE_INPUT)) {
+	gpio_set_dir_masked(data_mask, 0);
+	r_op = (gpio_get_all() & data_mask) >> DATA_GPIO_START ;
+	ram[cur_bank][m_adr] = r_op;
+	read = true;  
+      } else if (! written) {
+	w_op = ram[cur_bank][m_adr];   
+	gpio_set_dir_masked(data_mask, data_mask);	
+	gpio_put_masked(data_mask, (w_op << DATA_GPIO_START));
+	written = true;
+      }
+    }
+    
+    gpio_set_dir_masked(data_mask, 0);
 
   }
 
@@ -2897,7 +2836,7 @@ int main() {
 
     // ONLY needed for LABVOLT! 
     // see below, where this enabled for the LABVOLT ONLY 
-    // gpio_set_input_hysteresis_enabled(gpio, false);
+    gpio_set_input_hysteresis_enabled(gpio, false);
 
   }
 
@@ -2980,9 +2919,7 @@ int main() {
     
   case ET3400 :
   case ET3400_EXP : multicore_launch_core1(display_loop_et3400); break;
-    
-  case ET3400A : 
-  case ET3400A_EXP : multicore_launch_core1(display_loop_et3400a); break;
+  case ET3400A : multicore_launch_core1(display_loop_et3400a); break;
     
   case MPF : multicore_launch_core1(display_loop_et3400); break;
   
@@ -3010,21 +2947,13 @@ int main() {
   //
   
   switch (MACHINE_T) {
-
   case UNKNOWN : show_error_and_halt("BAD CONFIG!"); break;
-
-  case ET3400 : main_et3400(); break; // for Stock Heathkit ET-3400 4x 2112, 512 bytes 
-  case ET3400_EXP : main_et3400_exp(); break; // for Stock Heathkit with Expansion Header, 2 KBs 
-
-  case ET3400A : main_et3400a(); break; // for Stock Heathkit ET-3400A 2x 2114, but 512 bytes only! 
-  case ET3400A_EXP : main_et3400a_exp(); break; // for Stock Heathkit ET-3400A with Expansion Header, 2 KBs 
-
+  case ET3400 : main_et3400(); break; // for Heathkit Stock 4x 2112 
+  case ET3400A : main_et3400a(); break; 
+  case ET3400_EXP : main_et3400_exp(); break; // for Heathkit Expansion Header
   case LABVOLT : main_labvolt(); break; 
-
   case MC6400 : main_mc6400(); break; 
-
   case MPF : main_mpf(); break; 
-
   default : break;
   }
 

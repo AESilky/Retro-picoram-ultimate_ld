@@ -73,10 +73,15 @@ pictures:
 Eventually, I will create a new PCB version with this bug fix. But for
 now, the workaround is sufficient. 
 
-
 ### January 2026
 
-The stock Heathkit ET-3400A is supported by now - firmware version 1.6 
+- The Heathkit ET-3400A with expansion header is supported by now - firmware version 1.7 has been uploaded. This gives you 2 KBs of RAM.
+
+![ET-3400A a)](pics/ultimate-heathkit-a-exp1.JPG)
+
+Here is [a YT video.](https://youtu.be/NRePFKi3Nig)
+
+- The stock Heathkit ET-3400A is supported by now - firmware version 1.6 
 has been uploaded. 
 
 ![ET-3400A a)](pics/ultimate-heathkit-a-1.JPG)
@@ -310,7 +315,8 @@ more detail below.
 
 - `HEATHKIT`: stock Heathkit ET-3400. PicoRAM plugs into the `IC14` and `IC17` 2112 SRAM sockets and provides 512 bytes or 1 KB of SRAM (configurable).
 - `ET-3400A`: stock Heathkit ET-3400A. PicoRAM plugs into the `U14` and `U15` 2114 SRAM sockets and provides 512 Bytes of SRAM (*not* 1 KB, see below for an explanation).
-- `HEATHKIT+`: Heathkit ET-3400 with extension header. PicoRAM plugs onto the extension header and provides 2 KBs of SRAM. This required an additional address decoder (a GAL16V8). See below for details. 
+- `HEATHKIT+`: Heathkit ET-3400 with extension header. PicoRAM plugs onto the extension header and provides 2 KBs of SRAM. This required an additional address decoder (a GAL16V8). See below for details.
+- `HEATHKITA+`: Heathkit ET-3400A with extension header. PicoRAM plugs onto the extension header and provides 2 KBs of SRAM. This required an additional address decoder (a GAL16V8). See below for details. 
 - `LABVOLT`: Lab-Volt 6502 trainer. PicoRAM plugs into the `RAM (D0-D3)` and `RAM (D4-D7)` 2114 sockets and provides 1 KB of SRAM. 
 - `MASTERLAB`: Philips MC6400 MasterLab. PicoRAM plugs into the 2 2114 SRAM sockets and provides 1 KB of SRAM. 
 - `MPF`: Multitech Microprofessor MPF-1, MPF-1B, MPF-1P. PicoRAM plugs into the `U8` 6116 socket on the MPF-1(B), or the
@@ -455,6 +461,31 @@ Here, `+` means: **pull the jumper, but connect the DuPont jumper wire
 to the left pin of JP9 and route it into the RE socket.**
 
 ![ET-3400 Expanded 2](pics/ultimate-heathkit-exp3.JPG)
+
+### Stock Heathkit ET-3400A with Expansion Header
+
+If your ET-3400A has the expansion header installed, PicoRAM Ultimate
+can upgrade your machine to 2 KBs, address range: `0x0000 - 0x07ff`.
+
+![ET-3400A Expanded 1](pics/ultimate-heathkit-exp1.JPG)
+
+The machine type string (1st line in the `ULTIMATE.INI`) is
+``HEATHKITA+``.
+
+The same notes as for the ET-3400 and the expansion header apply.
+Note that the ET-3400A already has the RE and Phi2 wires
+pre-installed, but the databus cables need to be soldered in as well. 
+
+The same configuration as for the ET-3400 with expansion header
+applies: 
+
+
+| JP1 | JP2 | JP3 | JP4 | JP5 | JP6 | JP7 | JP8 | JP9 | A9 | A10 | 
+|-----|-----|-----|-----|-----|-----|-----|-----|-----|----|-----|
+| *   | R   | *   | L   | *   | L   | R   | L   | +   | D  | D   |
+
+Here, `+` means: **pull the jumper, but connect the DuPont jumper wire
+to the left pin of JP9 and route it into the RE socket.**
 
 
 ### Lab-Volt 6502 
