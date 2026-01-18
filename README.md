@@ -18,7 +18,8 @@ FAT file system facilitates data / file exchange with the PC or Mac.
 Currently supported SBCs / host machines are:
 - Stock Heathkit ET-3400: MC6800 CPU, either 2x 2112 (512 Bytes) or 4x 2112 (1 KB)
 - Stock Heathkit ET-3400A: MC6808 CPU, 2x 2114 (512 Bytes only!)
-- Heathkit ET-3400 memory expansion mode: MC6800 CPU, 2 KBs via expansion header and additional GAL16V8 address decoder 
+- Heathkit ET-3400 memory expansion mode: MC6800 CPU, 2 KBs via expansion header and additional GAL16V8 address decoder
+- Heathkit ET-3400A memory expansion mode: MC6808 (or MC6802) CPU, 2 KBs via expansion header and additional GAL16V8 address decoder 
 - Multitech Microprofessor MPF-1, MPF-1B and MPF-1P: Z80 CPU, 1x 6116, 2 KBs  
 - Lab-Volt 6502: 6502 CPU, 2x 2114, 1 KB
 - Philips MC6400 MasterLab: INS8070 SC/MP III CPU, 2x 2114, 1 KB
@@ -43,7 +44,20 @@ currently suported machines (with the exception of the MPF-1P):
 
 ### January 2026
 
-**Unfortunately, the current version of PicoRAM Ultimate has a PCB bug: 
+- The Heathkit ET-3400A with expansion header is supported by now - firmware version 1.7 has been uploaded. This gives you 2 KBs of RAM.
+
+![ET-3400A a)](pics/ultimate-heathkit-a-exp1.JPG)
+
+Here is [a YT video.](https://youtu.be/NRePFKi3Nig)
+
+- The stock Heathkit ET-3400A is supported by now - firmware version 1.6 
+has been uploaded. 
+
+![ET-3400A a)](pics/ultimate-heathkit-a-1.JPG)
+
+Here is [a YT video.](https://youtu.be/SLuOrD5KGnc)
+
+- **Unfortunately, the current version of PicoRAM Ultimate has a PCB bug: 
 the position of the RE signal on the header is incorrect. Apologies
 for that.**
 
@@ -73,20 +87,6 @@ pictures:
 Eventually, I will create a new PCB version with this bug fix. But for
 now, the workaround is sufficient. 
 
-### January 2026
-
-- The Heathkit ET-3400A with expansion header is supported by now - firmware version 1.7 has been uploaded. This gives you 2 KBs of RAM.
-
-![ET-3400A a)](pics/ultimate-heathkit-a-exp1.JPG)
-
-Here is [a YT video.](https://youtu.be/NRePFKi3Nig)
-
-- The stock Heathkit ET-3400A is supported by now - firmware version 1.6 
-has been uploaded. 
-
-![ET-3400A a)](pics/ultimate-heathkit-a-1.JPG)
-
-Here is [a YT video.](https://youtu.be/SLuOrD5KGnc)
 
 ### October 2025
 
