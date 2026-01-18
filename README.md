@@ -467,7 +467,7 @@ to the left pin of JP9 and route it into the RE socket.**
 If your ET-3400A has the expansion header installed, PicoRAM Ultimate
 can upgrade your machine to 2 KBs, address range: `0x0000 - 0x07ff`.
 
-![ET-3400A Expanded 1](pics/ultimate-heathkit-exp1.JPG)
+![ET-3400A Expanded 1](pics/ultimate-heathkit-a-exp1.JPG)
 
 The machine type string (1st line in the `ULTIMATE.INI`) is
 ``HEATHKITA+``.
